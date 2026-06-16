@@ -139,54 +139,6 @@ POST /analyze-workflow
 }
 ```
 
----
-
-## Running Locally
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/TestPilot-AI.git
-```
-
-### Navigate to the Project Directory
-
-```bash
-cd TestPilot-AI
-```
-
-### Create a Virtual Environment
-
-```bash
-python -m venv .venv
-```
-
-### Activate the Virtual Environment
-
-#### Windows
-
-```bash
-.venv\Scripts\activate
-```
-
-#### Linux / macOS
-
-```bash
-source .venv/bin/activate
-```
-
-### Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Create a `.env` File
-
-```env
-GEMINI_API_KEY=your_api_key_here
-```
-
 ### Run the Application
 
 ```bash
