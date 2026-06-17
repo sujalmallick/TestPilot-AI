@@ -25,3 +25,14 @@ class WorkflowState(TypedDict):
     # Agent Outputs
     checklist: str
     test_cases: str
+
+class IssueInput(BaseModel):
+    workflow: str
+
+    observation: str
+
+    expected_result: str | None = None
+
+    actual_result: str | None = None
+
+    failed_test_case: bool

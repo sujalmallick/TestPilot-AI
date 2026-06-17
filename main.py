@@ -4,6 +4,7 @@ from agents.checklist_agent import generate_checklist_agent
 from agents.module_agent import identify_modules_agent
 from agents.testcase_agent import generate_test_cases_agent
 from graph import workflow_graph
+from agents.issue_agent import analyze_issue_agent
 
 app = FastAPI()
 
@@ -49,3 +50,20 @@ def analyze_workflow(data: WorkflowInput):
     )
 
     return result
+
+@app.post("/analyze-issue")
+def analyze_issue(data: IssueInput):
+
+    return analyze_issue_agent(
+
+        workflow=data.workflow,
+
+        observation=data.observation,
+
+        expected_result=data.expected_result,
+
+        actual_result=data.actual_result,
+
+        failed_test_case=data.failed_test_case
+
+    )
