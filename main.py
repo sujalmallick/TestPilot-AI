@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from models import WorkflowInput
+from models import WorkflowInput, IssueInput
 from agents.checklist_agent import generate_checklist_agent
 from agents.module_agent import identify_modules_agent
 from agents.testcase_agent import generate_test_cases_agent

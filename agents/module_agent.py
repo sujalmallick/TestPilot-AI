@@ -1,6 +1,6 @@
 import json
 
-from utils import call_gemini
+from utils import call_gemini, parse_json_response
 
 
 def identify_modules_agent(workflow: str):
@@ -43,20 +43,4 @@ Rules:
 
     response = call_gemini(prompt)
 
-    try:
-
-        cleaned_response = (
-            response
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
-
-        result= json.loads(cleaned_response)
-        return result
-
-    except Exception:
-
-        return {
-            "raw_response": response
-        }
+    return parse_json_response(response)

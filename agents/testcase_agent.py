@@ -1,4 +1,4 @@
-from utils import call_gemini
+from utils import call_gemini,parse_json_response
 import json
 
 def generate_test_cases_agent(
@@ -78,15 +78,5 @@ Rules:
 """
 
     response = call_gemini(prompt)
-    try:
-        cleaned = (
-            response
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
-        return json.loads(cleaned)
-    except Exception:
-        return{
-            "raw_response": response,
-        }
+    return parse_json_response(response)
+   

@@ -1,5 +1,5 @@
 import os
-
+import json
 from dotenv import load_dotenv
 import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
@@ -25,7 +25,32 @@ def call_gemini(prompt: str):
 
     except ResourceExhausted:
 
-        return """
-ERROR: Gemini API quota exceeded.
-Please retry later or use a different API key.
-"""
+        return None
+
+def parse_json_response(response):
+
+    if response is None:
+
+        return {
+            "success": False,
+            "error": "Gemini API quota exceeded."
+        }
+
+    try:
+
+        cleaned = (
+            response
+            .replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+
+        return json.loads(cleaned)
+
+    except Exception:
+
+        return {
+            "success": False,
+            "error": "Invalid JSON returned by Gemini.",
+            "raw_response": response
+        }

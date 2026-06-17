@@ -1,6 +1,6 @@
 import json
 
-from utils import call_gemini
+from utils import call_gemini,parse_json_response
 
 
 def analyze_issue_agent(
@@ -56,20 +56,4 @@ No explanations.
 """
 
     response = call_gemini(prompt)
-
-    try:
-
-        cleaned = (
-            response
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
-
-        return json.loads(cleaned)
-
-    except Exception:
-
-        return {
-            "raw_response": response
-        }
+    return parse_json_response(response)

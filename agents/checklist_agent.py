@@ -56,4 +56,10 @@ Do not explain why the test cases are important.
 Keep the response under 30 checklist items.
 """
 
-    return call_gemini(prompt)
+    response = call_gemini(prompt)
+
+    if response is None:
+
+      return "ERROR: Gemini API quota exceeded."
+
+    return response
