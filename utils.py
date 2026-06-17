@@ -3,8 +3,17 @@ import json
 from dotenv import load_dotenv
 import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
+import logging
 
 load_dotenv()
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s | %(message)s"
+)
+
+logger = logging.getLogger("TestPilot")
 
 genai.configure(
     api_key=os.getenv("GEMINI_API_KEY")
@@ -15,8 +24,8 @@ model = genai.GenerativeModel(
     "gemini-2.5-flash"
 )
 
-def call_gemini(prompt: str):
-
+def call_llm(prompt: str):
+    logger.info("Sending request to Gemini")
     try:
 
         response = model.generate_content(prompt)

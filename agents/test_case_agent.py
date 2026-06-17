@@ -1,5 +1,6 @@
-from utils import call_gemini,parse_json_response
+from utils import call_llm,parse_json_response
 import json
+from utils import logger
 
 def generate_test_cases_agent(
     workflow,
@@ -77,6 +78,8 @@ Rules:
 - Return only JSON.
 """
 
-    response = call_gemini(prompt)
+    
+    logger.info("Running Testcase Agent")
+    response = call_llm(prompt)
     return parse_json_response(response)
    

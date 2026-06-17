@@ -1,6 +1,6 @@
 import json
-
-from utils import call_gemini,parse_json_response
+from utils import logger
+from utils import call_llm,parse_json_response
 
 
 def analyze_issue_agent(
@@ -55,5 +55,7 @@ No markdown.
 No explanations.
 """
 
-    response = call_gemini(prompt)
+    
+    logger.info("Running Issue analysis Agent")
+    response = call_llm(prompt)
     return parse_json_response(response)

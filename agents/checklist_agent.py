@@ -1,5 +1,5 @@
-from utils import call_gemini
-
+from utils import call_llm
+from utils import logger
 
 def generate_checklist_agent(
 
@@ -56,7 +56,10 @@ Do not explain why the test cases are important.
 Keep the response under 30 checklist items.
 """
 
-    response = call_gemini(prompt)
+    
+    logger.info("Running Checklist Agent")
+
+    response = call_llm(prompt)
 
     if response is None:
 

@@ -32,7 +32,7 @@
 #     test_cases: str
 
 # # Reusable Gemini call function
-# def call_gemini(prompt: str):
+# def call_llm(prompt: str):
 #     response = model.generate_content(prompt)
 #     return response.text
 
@@ -100,7 +100,7 @@
 # Keep the response under 30 checklist items.
 # """
 
-#     return call_gemini(prompt)
+#     return call_llm(prompt)
 
 
 # @app.post("/generate-checklist")
@@ -152,7 +152,7 @@
 #   """
 
 
-#     response = call_gemini(prompt)
+#     response = call_llm(prompt)
 
 #     try:
 #         # Clean markdown wrappers if Gemini adds them
@@ -227,7 +227,7 @@
 # - Generate between 5 and 15 test cases.
 # """
 
-#     return call_gemini(prompt)
+#     return call_llm(prompt)
 
 # @app.post("/generate-test-cases")
 # def generate_test_cases(data: WorkflowInput):

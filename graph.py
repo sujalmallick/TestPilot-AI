@@ -4,7 +4,7 @@ from models import WorkflowState
 
 from agents.module_agent import identify_modules_agent
 from agents.checklist_agent import generate_checklist_agent
-from agents.testcase_agent import generate_test_cases_agent
+from agents.test_case_agent import generate_test_cases_agent
 
 
 # Module Agent Node
