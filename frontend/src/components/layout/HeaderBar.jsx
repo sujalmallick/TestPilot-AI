@@ -1,0 +1,66 @@
+import { Search, Circle } from "lucide-react";
+
+import logo from "../../assets/bugmind2.png";
+import favicon from "../../assets/favicon.png";
+
+export default function HeaderBar({
+  connected = true,
+  onOpenCommandPalette,
+}) {
+  const shortcut =
+    navigator.platform.toUpperCase().includes("MAC")
+      ? "⌘ K"
+      : "Ctrl K";
+
+  return (
+    <header className="flex items-center justify-between border-b border-hairline bg-white px-6 py-3">
+      {/* Left */}
+      <div className="flex items-center gap-3">
+        <img
+          src={favicon}
+          alt="BugMind"
+          className="h-9 w-9 object-contain"
+        />
+
+        <img
+          src={logo}
+          alt="BugMind AI"
+          className="h-10 w-auto object-contain"
+        />
+      </div>
+
+      {/* Right */}
+      <div className="flex items-center gap-4 text-[13px] text-muted">
+        <span className="flex items-center gap-1.5">
+          <Circle
+            size={8}
+            className={
+              connected
+                ? "fill-verified text-verified"
+                : "fill-flagged text-flagged"
+            }
+          />
+          {connected
+            ? "Gemini 2.5 Flash connected"
+            : "Backend unreachable"}
+        </span>
+
+        <button
+          type="button"
+          onClick={onOpenCommandPalette}
+          className="flex items-center gap-2 rounded-lg border border-hairline bg-white px-3 py-2 text-[13px] transition-all hover:border-signal hover:bg-paper hover:text-ink"
+        >
+          <Search size={15} />
+
+          <span className="hidden sm:inline">
+            Search
+          </span>
+
+          <kbd className="hidden rounded-md border border-hairline bg-paper px-2 py-0.5 font-mono text-[11px] text-muted sm:inline">
+            {shortcut}
+          </kbd>
+        </button>
+      </div>
+    </header>
+  );
+}

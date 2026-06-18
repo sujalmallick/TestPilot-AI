@@ -1,0 +1,87 @@
+import { ArrowRight } from 'lucide-react'
+import StatusPill, { PriorityPill } from './StatusPill'
+
+export default function TestCaseTable({
+  testCases,
+  onStatusChange,
+  onJumpToIssue,
+}) {
+  const safeTestCases = Array.isArray(testCases) ? testCases : []
+
+  return (
+    <div className="scroll-thin overflow-x-auto rounded-lg border border-hairline">
+      <table className="w-full min-w-[900px] text-left text-[13px]">
+        <thead>
+          <tr className="border-b border-hairline bg-paper text-[12px] text-muted">
+            <th className="px-3 py-2.5 font-medium">ID</th>
+            <th className="px-3 py-2.5 font-medium">Description</th>
+            <th className="px-3 py-2.5 font-medium">Module</th>
+            <th className="px-3 py-2.5 font-medium">Category</th>
+            <th className="px-3 py-2.5 font-medium">Priority</th>
+            <th className="px-3 py-2.5 font-medium">Status</th>
+            <th className="px-3 py-2.5 text-center font-medium">
+              Issue
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {safeTestCases.map((testCase) => (
+            <tr
+              key={testCase.id}
+              className="border-b border-hairline last:border-0 hover:bg-paper"
+            >
+              <td className="px-3 py-3 font-mono text-[12px] text-muted">
+                {testCase.id}
+              </td>
+
+              <td className="max-w-sm px-3 py-3 text-ink">
+                {testCase.description || "-"}
+              </td>
+
+              <td className="px-3 py-3 text-muted">
+                {testCase.module || "-"}
+              </td>
+
+              <td className="px-3 py-3 text-muted">
+                {testCase.category || "-"}
+              </td>
+
+              <td className="px-3 py-3">
+                <PriorityPill
+                  priority={testCase.priority}
+                />
+              </td>
+
+              <td className="px-3 py-3">
+                <StatusPill
+                  status={testCase.status}
+                  onChange={(status) =>
+                    onStatusChange(testCase.id, status)
+                  }
+                />
+              </td>
+
+              <td className="px-3 py-3 text-center">
+                {testCase.status === "fail" ? (
+                  <button
+                    type="button"
+                    onClick={() => onJumpToIssue?.(testCase)}
+                    className="inline-flex items-center gap-1 rounded-md border border-signal px-2 py-1 text-[12px] text-signal transition-colors hover:bg-signal hover:text-white"
+                  >
+                    Issue
+                    <ArrowRight size={12} />
+                  </button>
+                ) : (
+                  <span className="text-[12px] text-muted">
+                    —
+                  </span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
