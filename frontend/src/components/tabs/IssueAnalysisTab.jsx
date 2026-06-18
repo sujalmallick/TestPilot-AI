@@ -65,8 +65,17 @@ export default function IssueAnalysisTab({ form, onFormChange, onGenerate, isGen
           placeholder="What actually happened?"
           rows={2}
         />
+{error && (
+  <div className="rounded-lg border border-flagged/20 bg-flagged/5 p-3">
+    <p className="text-sm font-medium text-flagged">
+      Issue Analysis couldn't be completed
+    </p>
 
-        {error && <p className="text-[13px] text-flagged">{error}</p>}
+    <p className="mt-1 text-[13px] text-muted">
+      {error}
+    </p>
+  </div>
+)}
 
         <button
           type="button"
@@ -108,13 +117,17 @@ export default function IssueAnalysisTab({ form, onFormChange, onGenerate, isGen
         {!isGenerating && result && form.mode === 'failed' && (
           <div>
             <ResultRow label="Bug type">
-              <span className="text-[13px] text-ink">{result.bugType}</span>
+              <span className="text-[13px] text-ink">
+  {result.bugType}
+</span>
             </ResultRow>
             <ResultRow label="Severity">
               <SeverityPill severity={result.severity} />
             </ResultRow>
             <ResultRow label="Priority">
-              <PriorityPill priority={result.priority?.toLowerCase().includes('1') ? 'high' : 'medium'} />
+             <PriorityPill
+  priority={result.priority?.toLowerCase()}
+/> 
             </ResultRow>
             <ResultRow label="Title">
               <span className="max-w-[60%] text-right text-[13px] text-ink">{result.title}</span>
@@ -125,13 +138,17 @@ export default function IssueAnalysisTab({ form, onFormChange, onGenerate, isGen
         {!isGenerating && result && form.mode === 'exploratory' && (
           <div>
             <ResultRow label="Observation type">
-              <span className="text-[13px] text-ink">{result.observationType}</span>
+             <span className="text-[13px] text-ink">
+  {result.observationType}
+</span>
             </ResultRow>
             <ResultRow label="Severity">
               <SeverityPill severity={result.severity} />
             </ResultRow>
             <ResultRow label="Suggested next action">
-              <span className="max-w-[60%] text-right text-[13px] text-ink">{result.nextAction}</span>
+              <span className="max-w-[60%] text-right text-[13px] text-ink">
+  {result.suggestedAction}
+</span>
             </ResultRow>
           </div>
         )}

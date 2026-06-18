@@ -107,37 +107,79 @@ setApiError(null)
     setIssueForm({ ...EMPTY_ISSUE_FORM, mode: 'failed', observation: testCase.description })
     setActiveTab('issues')
   }
+async function handleGenerateIssue() {
 
-  async function handleGenerateIssue() {
-    setIssueStatus('loading')
-    setIssueError(null)
-    try {
-      const result = await classifyIssue(issueForm)
-      setIssueResult(result)
-      setIssueStatus('success')
-    } catch (error) {
-      setIssueStatus('error')
-      setIssueError(error.message)
+  if (!issueForm.observation.trim()) {
+    showToast("Please enter an observation first.")
+    return
+  }
+
+  if (
+    issueForm.mode === "failed" &&
+    (
+      !issueForm.expected.trim() ||
+      !issueForm.actual.trim()
+    )
+  ) {
+    showToast("Expected and Actual result are required.")
+    return
+  }
+
+  setIssueStatus("loading")
+  setIssueError(null)
+  setIssueResult(null)
+
+  try {
+
+    const result = await classifyIssue({
+      ...issueForm,
+      workflow,
+    })
+
+    // Handle API errors (quota exceeded, invalid key, etc.)
+    if (result.success === false) {
+      setIssueStatus("error")
+      setIssueError(result.error)
+      return
     }
-  }
 
-  function handleCopyIssueResult() {
-    if (!issueResult) return
-    const lines =
-      issueForm.mode === 'failed'
-        ? [
-            `**Bug type:** ${issueResult.bugType}`,
-            `**Severity:** ${issueResult.severity}`,
-            `**Priority:** ${issueResult.priority}`,
-            `**Title:** ${issueResult.title}`,
-          ]
-        : [
-            `**Observation type:** ${issueResult.observationType}`,
-            `**Severity:** ${issueResult.severity}`,
-            `**Next action:** ${issueResult.nextAction}`,
-          ]
-    navigator.clipboard.writeText(lines.join('\n')).then(() => showToast('Copied to clipboard'))
+    setIssueResult(result)
+    setIssueStatus("success")
+
+  } catch (error) {
+
+    setIssueStatus("error")
+
+    if (error.response?.data?.error) {
+      setIssueError(error.response.data.error)
+    } else {
+      setIssueError(error.message || "Something went wrong.")
+    }
+
   }
+}
+
+function handleCopyIssueResult() {
+  if (!issueResult) return
+
+  const lines =
+    issueForm.mode === "failed"
+      ? [
+          `**Bug type:** ${issueResult.bugType}`,
+          `**Severity:** ${issueResult.severity}`,
+          `**Priority:** ${issueResult.priority}`,
+          `**Title:** ${issueResult.title}`,
+        ]
+      : [
+          `**Observation type:** ${issueResult.observationType}`,
+          `**Severity:** ${issueResult.severity}`,
+          `**Suggested action:** ${issueResult.suggestedAction}`,
+        ]
+
+  navigator.clipboard
+    .writeText(lines.join("\n"))
+    .then(() => showToast("Copied to clipboard"))
+}
 
   const tabsWithCounts = TABS.map((tab) =>
     tab.key === 'testcases' ? { ...tab, count: testCases.length } : tab,
