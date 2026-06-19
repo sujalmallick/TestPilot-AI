@@ -7,6 +7,7 @@ import favicon from "../../assets/favicon.png";
 export default function HeaderBar({
   connected = true,
   onOpenCommandPalette,
+  projectName,
 }) {
   const navigate = useNavigate();
 
@@ -19,26 +20,47 @@ export default function HeaderBar({
     <header className="sticky top-0 z-50 flex items-center justify-between border-b border-hairline bg-white px-6 py-4 shadow-sm">
       
       {/* Left */}
-      <div
-        title="Go to Projects"
-        onClick={() => navigate("/")}
-        className="flex cursor-pointer items-center gap-3 transition-opacity hover:opacity-90"
-      >
-        <img
-          src={favicon}
-          alt="BugMind"
-          className="h-10 w-10 object-contain"
-        />
+      <div className="flex items-center gap-5">
 
-        <img
-          src={logo}
-          alt="BugMind AI"
-          className="h-11 w-auto object-contain"
-        />
+        <div
+          title="Go to Projects"
+          onClick={() => navigate("/")}
+          className="flex cursor-pointer items-center gap-3 transition-opacity hover:opacity-90"
+        >
+          <img
+            src={favicon}
+            alt="BugMind"
+            className="h-10 w-10 object-contain"
+          />
+
+          <img
+            src={logo}
+            alt="BugMind AI"
+            className="h-11 w-auto object-contain"
+          />
+        </div>
+
+        {projectName && (
+          <>
+            <div className="h-8 w-px bg-gray-200" />
+
+            <div className="min-w-0">
+              <p className="truncate text-base font-semibold text-ink">
+                {projectName}
+              </p>
+
+              <p className="text-xs text-muted">
+                (Current Project)
+              </p>
+            </div>
+          </>
+        )}
+
       </div>
 
       {/* Right */}
       <div className="flex items-center gap-4 text-[13px] text-muted">
+
         <span className="flex items-center gap-2 rounded-full border border-hairline bg-paper px-3 py-1.5 text-[12px] font-medium">
           <Circle
             size={8}
@@ -48,6 +70,7 @@ export default function HeaderBar({
                 : "fill-flagged text-flagged"
             }
           />
+
           {connected
             ? "Gemini 2.5 Flash connected"
             : "Backend unreachable"}
@@ -68,7 +91,9 @@ export default function HeaderBar({
             {shortcut}
           </kbd>
         </button>
+
       </div>
+
     </header>
   );
 }

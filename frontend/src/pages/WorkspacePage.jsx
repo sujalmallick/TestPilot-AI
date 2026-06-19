@@ -149,6 +149,7 @@ useEffect(() => {
   projectService.saveWorkspace(projectId, {
     workflow,
     observedSteps,
+   
 
     analysisStatus,
     analysis,
@@ -226,7 +227,10 @@ setPanelCollapsed(true);
 setActiveTab("modules");
 
 showToast("Workflow analyzed successfully!");
-
+projectService.update(projectId, {
+  ...project,
+  status: "Analyzed",
+});
 navigate(`/project/${projectId}/workspace`);
 
     } catch (error) {
@@ -357,7 +361,11 @@ if (projectNotFound) {
 }
   return (
   <div className="min-h-screen bg-slate-50 font-sans text-ink">
-      <HeaderBar connected onOpenCommandPalette={() => setCommandPaletteOpen(true)} />
+    <HeaderBar
+  connected
+  projectName={project?.name}
+  onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+/>
 
 
 <div className="mx-auto max-w-7xl">

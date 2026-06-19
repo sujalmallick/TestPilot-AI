@@ -10,6 +10,7 @@ export function createProject({
     name,
 
     description,
+    status: "Draft",
 
     workflow: "",
 

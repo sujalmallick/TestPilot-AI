@@ -29,9 +29,22 @@ export const projectService = {
           }
         : project
     );
-
     this.saveAll(projects);
   },
+  
+  updateName(id, name) {
+  const projects = this.getAll().map((project) =>
+    project.id === id
+      ? {
+          ...project,
+          name,
+          updatedAt: new Date().toISOString(),
+        }
+      : project
+  );
+
+  this.saveAll(projects);
+},
 
   delete(id) {
     const projects = this.getAll().filter(
