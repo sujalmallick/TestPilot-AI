@@ -1,56 +1,71 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from models import WorkflowInput, IssueInput
-from agents.checklist_agent import generate_checklist_agent
-from agents.module_agent import identify_modules_agent
-from agents.test_case_agent import generate_test_cases_agent
 from graph import workflow_graph
 from agents.issue_agent import analyze_issue_agent
 
 app = FastAPI()
 
-@app.post("/generate-checklist")
-def generate_checklist(data: WorkflowInput):
-
-    return {
-        "checklist":
-        generate_checklist_agent(
-            data.workflow
-        )
-    }
-
-@app.post("/identify-modules")
-def identify_modules(data: WorkflowInput):
-
-    return identify_modules_agent(
-        data.workflow
-    )
-
-@app.post("/generate-test-cases")
-def generate_test_cases(data: WorkflowInput):
-
-    return {
-        "test_cases":
-        generate_test_cases_agent(
-            data.workflow,
-            data.observed_steps
-        )
-    }
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/analyze-workflow")
 def analyze_workflow(data: WorkflowInput):
 
     result = workflow_graph.invoke(
         {
-            "workflow":
-            data.workflow,
-
-            "observed_steps":
-            data.observed_steps
+            "workflow": data.workflow,
+            "observed_steps": data.observed_steps
         }
     )
 
-    return result
+    modules = result.get("modules", {})
+    checklist = result.get("checklist")
+    test_cases = result.get("test_cases")
 
+    # Return AI errors immediately
+    if isinstance(modules, dict) and modules.get("success") is False:
+        return modules
+
+    if isinstance(checklist, dict) and checklist.get("success") is False:
+        return checklist
+
+    if isinstance(test_cases, dict) and test_cases.get("success") is False:
+        return test_cases
+
+    return {
+
+        "success": True,
+
+        "workflow": result.get("workflow"),
+
+        "confirmedModules":
+            modules.get("confirmed_modules", []),
+
+        "assumedModules":
+            modules.get("assumed_modules", []),
+
+        "criticalWorkflows":
+            result.get("critical_workflows", []),
+
+        "highRiskAreas":
+            result.get("high_risk_areas", []),
+
+        "checklist":
+            checklist if isinstance(checklist, list) else [],
+
+        "testCases":
+            test_cases if isinstance(test_cases, list) else []
+
+    }
 @app.post("/analyze-issue")
 def analyze_issue(data: IssueInput):
 

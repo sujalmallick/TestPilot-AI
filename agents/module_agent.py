@@ -43,5 +43,14 @@ Rules:
 
     
     logger.info("Running Module Agent")
+
+
     response = call_llm(prompt)
+    if isinstance(response, dict):
+     return response
+
     return parse_json_response(response)
+    
+
+    
+    

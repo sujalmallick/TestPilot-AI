@@ -1,37 +1,59 @@
-import { ArrowRight } from 'lucide-react'
-import StatusPill, { PriorityPill } from './StatusPill'
-export default function TestCaseTable({
-  testCases,
+import { ArrowRight } from "lucide-react";
+import StatusPill, { PriorityPill } from "./StatusPill";
+
+export default function TrackerTable({
+  testCases = [],
   onStatusChange,
   onJumpToIssue,
- 
+  selectedRows = [],
+  onToggleRow,
+  onToggleAll,
 }) {
-  const safeTestCases = Array.isArray(testCases) ? testCases : []
-
   return (
     <div className="scroll-thin overflow-x-auto rounded-lg border border-hairline">
       <table className="w-full min-w-[900px] text-left text-[13px]">
         <thead>
           <tr className="border-b border-hairline bg-paper text-[12px] text-muted">
-    
+            <th className="w-10 px-3 py-2.5">
+              <input
+                type="checkbox"
+                checked={
+                  testCases.length > 0 &&
+                  selectedRows.length === testCases.length
+                }
+                onChange={onToggleAll}
+                className="h-4 w-4 cursor-pointer"
+              />
+            </th>
+
             <th className="px-3 py-2.5 font-medium">ID</th>
             <th className="px-3 py-2.5 font-medium">Description</th>
             <th className="px-3 py-2.5 font-medium">Module</th>
             <th className="px-3 py-2.5 font-medium">Category</th>
             <th className="px-3 py-2.5 font-medium">Priority</th>
             <th className="px-3 py-2.5 font-medium">Status</th>
-            <th className="px-3 py-2.5 text-center font-medium">
-              Issue
-            </th>
+            <th className="px-3 py-2.5 text-center font-medium">Issue</th>
           </tr>
         </thead>
 
         <tbody>
-          {safeTestCases.map((testCase) => (
+          {testCases.map((testCase) => (
             <tr
-  key={testCase.id}
-  className="border-b border-hairline last:border-0 hover:bg-paper"
->
+              key={testCase.id}
+              className={`border-b border-hairline last:border-0 hover:bg-paper ${
+                selectedRows.includes(testCase.id)
+                  ? "bg-blue-50"
+                  : ""
+              }`}
+            >
+              <td className="px-3 py-3">
+                <input
+                  type="checkbox"
+                  checked={selectedRows.includes(testCase.id)}
+                  onChange={() => onToggleRow(testCase.id)}
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </td>
 
               <td className="px-3 py-3 font-mono text-[12px] text-muted">
                 {testCase.id}
@@ -50,9 +72,7 @@ export default function TestCaseTable({
               </td>
 
               <td className="px-3 py-3">
-                <PriorityPill
-                  priority={testCase.priority}
-                />
+                <PriorityPill priority={testCase.priority} />
               </td>
 
               <td className="px-3 py-3">
@@ -66,8 +86,8 @@ export default function TestCaseTable({
 
               <td className="px-3 py-3 text-center">
                 {["fail", "failed"].includes(
-  testCase.status?.toLowerCase()
-) ? (
+                  testCase.status?.toLowerCase()
+                ) ? (
                   <button
                     type="button"
                     onClick={() => onJumpToIssue?.(testCase)}
@@ -77,9 +97,7 @@ export default function TestCaseTable({
                     <ArrowRight size={12} />
                   </button>
                 ) : (
-                  <span className="text-[12px] text-muted">
-                    —
-                  </span>
+                  <span className="text-[12px] text-muted">—</span>
                 )}
               </td>
             </tr>
@@ -87,5 +105,5 @@ export default function TestCaseTable({
         </tbody>
       </table>
     </div>
-  )
+  );
 }

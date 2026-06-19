@@ -1,10 +1,16 @@
-import { Filter, Download, Table2 } from 'lucide-react'
+import {Download, Table2 } from 'lucide-react'
 import EmptyState from '../shared/EmptyState'
-import SkeletonBlock from '../shared/SkeletonBlock'
 import TestCaseTable from '../shared/TestCaseTable'
-import AIThinking from "../shared/AIThinking";
+import { exportTestCasesCSV } from "../../lib/exportCSV";
 
-export default function TestCasesTab({ testCases, isLoading, onStatusChange, onJumpToIssue }) {
+
+export default function TestCasesTab({
+  testCases,
+  isLoading,
+  onStatusChange,
+  onJumpToIssue,
+  showToast,
+}) {
 
 
   if (!testCases || testCases.length === 0) {
@@ -24,20 +30,17 @@ export default function TestCasesTab({ testCases, isLoading, onStatusChange, onJ
       <div className="mb-3 flex items-center justify-between">
         <p className="text-[12px] text-muted">Click a status pill to cycle pending → pass → fail.</p>
         <div className="flex gap-2">
-          <button
-            type="button"
-            disabled
-            className="flex items-center gap-1.5 rounded-md border border-hairline px-2.5 py-1.5 text-[12px] text-muted opacity-50"
-          >
-            <Filter size={13} /> Filter
-          </button>
-          <button
-            type="button"
-            disabled
-            className="flex items-center gap-1.5 rounded-md border border-hairline px-2.5 py-1.5 text-[12px] text-muted opacity-50"
-          >
-            <Download size={13} /> Export
-          </button>
+       <button
+  type="button"
+  onClick={() => {
+   
+    exportTestCasesCSV(testCases, "BugMind_TestCases");
+  }}className="flex items-center gap-1.5 rounded-md border border-hairline bg-surface px-2.5 py-1.5 text-[12px] font-medium text-ink transition-all duration-200 hover:border-signal hover:bg-paper hover:text-signal"
+>
+  <Download size={13} />
+  Export CSV
+</button>
+        
         </div>
       </div>
       <TestCaseTable testCases={testCases} onStatusChange={onStatusChange} onJumpToIssue={onJumpToIssue} />

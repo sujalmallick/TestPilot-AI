@@ -1,6 +1,6 @@
 import json
 from utils import logger
-from utils import call_llm,parse_json_response
+from utils import call_llm, parse_json_response
 
 
 def analyze_issue_agent(
@@ -31,31 +31,39 @@ Failed Test Case:
 
 Task:
 
-If failed_test_case is TRUE, return:
+If failed_test_case is TRUE, return EXACTLY:
 
 {{
-    "report_type": "Bug",
+    "reportType": "Bug",
     "title": "",
-    "bug_type": "",
+    "bugType": "",
     "severity": "",
     "priority": ""
 }}
 
-If failed_test_case is FALSE, return:
+If failed_test_case is FALSE, return EXACTLY:
 
 {{
-    "report_type": "Observation",
-    "observation_type": "",
+    "reportType": "Observation",
+    "observationType": "",
     "severity": "",
-    "suggested_action": ""
+    "suggestedAction": ""
 }}
 
-Return ONLY valid JSON.
-No markdown.
-No explanations.
+Rules:
+
+- Return ONLY valid JSON.
+- Use the field names EXACTLY as shown above.
+- Do NOT use snake_case.
+- No markdown.
+- No explanations.
 """
 
-    
-    logger.info("Running Issue analysis Agent")
+    logger.info("Running Issue Analysis Agent")
+
     response = call_llm(prompt)
+
+    if isinstance(response, dict):
+        return response
+
     return parse_json_response(response)

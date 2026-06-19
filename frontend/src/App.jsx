@@ -81,13 +81,16 @@ if (result.success === false) {
 }
 
 setApiError(null)
-      setAnalysis(result)
-      setTestCases(result.testCases)
-      setCheckedItems({})
-      setAnalysisStatus('success')
-      setPanelCollapsed(true)
-      setShowSummary(true)
-      setActiveTab('modules')
+     setAnalysis(result)
+setTestCases(result.testCases)
+setCheckedItems({})
+
+setAnalysisStatus("success")
+showToast("Workflow analyzed successfully!")
+
+setPanelCollapsed(true)
+setShowSummary(true)
+setActiveTab("modules")
     } catch (error) {
       setAnalysisStatus('error')
       setAnalysisError(error.message)
@@ -145,6 +148,7 @@ async function handleGenerateIssue() {
 
     setIssueResult(result)
     setIssueStatus("success")
+    showToast("Issue analysis completed!")
 
   } catch (error) {
 
@@ -178,7 +182,7 @@ function handleCopyIssueResult() {
 
   navigator.clipboard
     .writeText(lines.join("\n"))
-    .then(() => showToast("Copied to clipboard"))
+    .then(() => showToast("Markdown copied successfully!"))
 }
 
   const tabsWithCounts = TABS.map((tab) =>
@@ -265,12 +269,13 @@ function handleCopyIssueResult() {
           )}
 
           {activeTab === "testcases" && (
-            <TestCasesTab
-              testCases={testCases}
-              isLoading={false}
-              onStatusChange={handleStatusChange}
-              onJumpToIssue={handleJumpToIssue}
-            />
+           <TestCasesTab
+  testCases={testCases}
+  isLoading={false}
+  onStatusChange={handleStatusChange}
+  onJumpToIssue={handleJumpToIssue}
+  showToast={showToast}
+/>
           )}
 
           {activeTab === "issues" && (
@@ -290,6 +295,7 @@ function handleCopyIssueResult() {
               testCases={testCases}
               onStatusChange={handleStatusChange}
               onJumpToIssue={handleJumpToIssue}
+              showToast={showToast}
             />
           )}
 

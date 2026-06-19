@@ -1,6 +1,6 @@
-from utils import call_llm,parse_json_response
-import json
+from utils import call_llm, parse_json_response
 from utils import logger
+from constants import TEST_CASE_STATUSES
 
 def generate_test_cases_agent(
     workflow,
@@ -20,6 +20,8 @@ def generate_test_cases_agent(
         steps_section = f"""
 Observed User Steps:
 {formatted_steps}
+
+Base the execution steps on these observed steps whenever applicable.
 """
 
     else:
@@ -47,39 +49,67 @@ High Risk Areas:
 
 {steps_section}
 
-Generate manual test cases.
+Generate execution-ready manual test cases.
 
 Return ONLY valid JSON.
 
 Format:
 
 [
-    {{
-        "module":"",
-        "type":"",
-        "description":"",
-        "objective":"",
-        "preconditions":"",
-        "steps":[
-            ""
-        ],
-        "input_data":"",
-        "expected_result":"",
-        "priority":""
-    }}
+  {{
+    "module": "Authentication",
+    "category": "Functional",
+    "description": "Verify login with valid credentials",
+    "objective": "Verify successful login",
+    "preconditions": "User account exists",
+    "steps": [
+      "Open App",
+      "Tap Login",
+      "Enter valid email",
+      "Enter valid password",
+      "Tap Login"
+    ],
+    "inputData": "Valid Email, Valid Password",
+    "expectedResult": "User is redirected to the dashboard",
+    "priority": "High"
+  }}
 ]
 
 Rules:
 
-- Cover every confirmed module.
-- Generate functional, negative and edge cases.
-- Do not return markdown.
-- Do not explain anything.
-- Return only JSON.
+- Cover ALL confirmed modules.
+- Include Functional, Negative and Edge Case scenarios.
+- Prioritize critical workflows.
+- Include high-risk scenarios.
+- Keep execution steps concise.
+- Use observed steps whenever available.
+- Priority must be one of:
+  High
+  Medium
+  Low
+- Category must be one of:
+  Functional
+  Negative
+  Edge Case
+  Security
+  Regression
+- Return ONLY valid JSON.
+- No markdown.
+- No explanations.
 """
 
-    
-    logger.info("Running Testcase Agent")
+    logger.info("Running Test Case Agent")
+
     response = call_llm(prompt)
-    return parse_json_response(response)
-   
+
+    test_cases = parse_json_response(response)
+
+    if isinstance(test_cases, list):
+
+        for index, test_case in enumerate(test_cases, start=1):
+
+            test_case["id"] = f"TC-{index:03d}"
+
+            test_case["status"] = TEST_CASE_STATUSES["NOT_EXECUTED"]
+
+    return test_cases
