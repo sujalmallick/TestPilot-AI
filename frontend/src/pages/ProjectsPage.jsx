@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { projectService } from "../services/projectService";
 import ProjectsHeader from "../components/projects/ProjectsHeader";
 import ProjectGrid from "../components/projects/ProjectGrid";
 import CreateProjectModal from "../components/projects/CreateProjectModal";
@@ -27,10 +27,17 @@ export default function ProjectsPage() {
     setShowModal(false);
   }
 
-  function handleOpen(id) {
-    selectProject(id);
+ function handleOpen(id) {
+  const project = projectService.getById(id);
+
+  selectProject(id);
+
+  if (project?.analysis) {
+    navigate(`/project/${id}/workspace`);
+  } else {
     navigate(`/project/${id}`);
   }
+}
 
   return (
     <>

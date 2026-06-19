@@ -5,13 +5,25 @@ import WorkspacePage from "../pages/WorkspacePage";
 
 export default function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<ProjectsPage />} />
+   
+      <Routes>
 
-      <Route
-        path="/project/:projectId"
-        element={<WorkspacePage />}
-      />
-    </Routes>
+        <Route
+          path="/"
+          element={<ProjectsPage />}
+        />
+
+        <Route
+          path="/project/:projectId"
+          element={<WorkspacePage />}
+        />
+
+        <Route
+          path="/project/:projectId/workspace"
+          element={<WorkspacePage />}
+        />
+
+      </Routes>
+   
   );
 }

@@ -3,7 +3,7 @@ import HeaderBar from "../components/layout/HeaderBar";
 import WorkflowInputPanel from "../components/layout/WorkflowInputPanel";
 import TabBar from "../components/layout/TabBar";
 import CommandPalette from "../components/layout/CommandPalette";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import ToastStack from "../components/shared/ToastStack";
 import useToasts from "../components/shared/useToasts";
 import AIThinking from "../components/shared/AIThinking";
@@ -16,7 +16,7 @@ import IssueAnalysisTab from "../components/tabs/IssueAnalysisTab";
 import TrackerTab from "../components/tabs/TrackerTab";
 import { analyzeWorkflow, classifyIssue } from "../api/TestPilotApi";
 import { projectService } from "../services/projectService";
-
+import { useRef } from "react";
 
 const TABS = [
   { key: 'modules', label: 'Modules' },
@@ -29,8 +29,14 @@ const TABS = [
 const EMPTY_ISSUE_FORM = { observation: '', expected: '', actual: '', mode: 'failed' }
 export default function WorkspacePage() {
   const { projectId } = useParams();
+  const location = useLocation();
+const navigate = useNavigate();
+
+const isWorkspaceRoute =
+  location.pathname.endsWith("/workspace");
   const { toasts, showToast } = useToasts()
 const [project, setProject] = useState(null);
+const hasLoadedProject = useRef(false);
 const [projectNotFound, setProjectNotFound] = useState(false);
   // Workflow input + analysis
   const [workflow, setWorkflow] = useState('')
@@ -67,6 +73,9 @@ const [projectNotFound, setProjectNotFound] = useState(false);
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
+
+
+
 useEffect(() => {
   const selectedProject = projectService.getById(projectId);
 
@@ -76,14 +85,102 @@ useEffect(() => {
   }
 
   setProjectNotFound(false);
-
   setProject(selectedProject);
 
+  // Restore workflow
   setWorkflow(selectedProject.workflow || "");
   setObservedSteps(selectedProject.observedSteps || "");
-  setAnalysis(selectedProject.analysis);
-  setTestCases(selectedProject.testCases || []);
-}, [projectId]);
+
+  // Restore analysis
+  setAnalysisStatus(
+    selectedProject.analysisStatus || "idle"
+  );
+
+  setAnalysis(selectedProject.analysis || null);
+
+  setTestCases(
+    selectedProject.testCases || []
+  );
+
+  // Restore UI state
+  setCheckedItems(
+    selectedProject.checkedItems || {}
+  );
+
+  setActiveTab(
+    selectedProject.activeTab || "modules"
+  );
+
+  setPanelCollapsed(
+    selectedProject.panelCollapsed ?? false
+  );
+
+  setIssueForm(
+    selectedProject.issueForm || EMPTY_ISSUE_FORM
+  );
+
+  // Decide whether to show Summary or Workspace
+  if (selectedProject.analysisStatus === "success") {
+
+    if (location.pathname.endsWith("/workspace")) {
+      setShowSummary(false);
+    } else {
+      setShowSummary(true);
+    }
+
+  } else {
+    setShowSummary(false);
+  }
+
+  // Mark project as fully restored
+  hasLoadedProject.current = true;
+
+}, [projectId, location.pathname]);
+
+
+
+useEffect(() => {
+  if (!hasLoadedProject.current || !projectId) return;
+
+  projectService.saveWorkspace(projectId, {
+    workflow,
+    observedSteps,
+
+    analysisStatus,
+    analysis,
+
+    testCases,
+
+    checkedItems,
+
+    activeTab,
+
+    showSummary,
+
+    panelCollapsed,
+
+    issueForm,
+
+    issueHistory: project?.issueHistory || [],
+
+    tracker: project?.tracker || [],
+  });
+
+}, [
+  workflow,
+  observedSteps,
+  analysisStatus,
+  analysis,
+  testCases,
+  checkedItems,
+  activeTab,
+  showSummary,
+  panelCollapsed,
+  issueForm,
+  projectId,
+]);
+
+
 
   async function handleAnalyze() {
     setAnalysisStatus('loading')
@@ -104,12 +201,15 @@ setApiError(null)
 setAnalysis(result)
 setTestCases(result.testCases)
 setCheckedItems({})
-setAnalysisStatus("success")
-showToast("Workflow analyzed successfully!")
 
-setPanelCollapsed(true)
-setShowSummary(true)
-setActiveTab("modules")
+setAnalysisStatus("success")
+setPanelCollapsed(true);
+setActiveTab("modules");
+
+showToast("Workflow analyzed successfully!");
+
+navigate(`/project/${projectId}/workspace`);
+
     } catch (error) {
       setAnalysisStatus('error')
       setAnalysisError(error.message)
@@ -269,30 +369,39 @@ if (projectNotFound) {
 )}
 {analysisStatus === "success" && (
   <>
-    {showSummary ? (
+    {/* ---------------- ANALYZE PAGE ---------------- */}
+    {!isWorkspaceRoute ? (
       <AnalysisSummary
         analysis={analysis}
         testCases={testCases}
-        onContinue={() => setShowSummary(false)}
+        onContinue={() =>
+          navigate(`/project/${projectId}/workspace`)
+        }
       />
     ) : (
       <>
-     <div className="mt-6 rounded-xl border border-hairline bg-white shadow-sm">
-  <button
-    type="button"
-    onClick={() => setShowSummary(true)}
-    className="px-5 py-3 text-sm font-medium text-signal transition hover:text-ink"
-  >
-    ← Analysis Summary
-  </button>
+        {/* ---------------- WORKSPACE ---------------- */}
+        <div className="mt-6 rounded-xl border border-hairline bg-white shadow-sm">
 
-  <TabBar
-    tabs={tabsWithCounts}
-    activeTab={activeTab}
-    onChange={setActiveTab}
-  />
-</div>
-<main className="mt-6 pb-10">
+          <button
+            type="button"
+            onClick={() =>
+              navigate(`/project/${projectId}`)
+            }
+            className="px-5 py-3 text-sm font-medium text-signal transition hover:text-ink"
+          >
+            ← Analysis Summary
+          </button>
+
+          <TabBar
+            tabs={tabsWithCounts}
+            activeTab={activeTab}
+            onChange={setActiveTab}
+          />
+
+        </div>
+
+        <main className="mt-6 pb-10">
 
           {activeTab === "modules" && (
             <ModulesTab
@@ -311,13 +420,13 @@ if (projectNotFound) {
           )}
 
           {activeTab === "testcases" && (
-           <TestCasesTab
-  testCases={testCases}
-  isLoading={false}
-  onStatusChange={handleStatusChange}
-  onJumpToIssue={handleJumpToIssue}
-  showToast={showToast}
-/>
+            <TestCasesTab
+              testCases={testCases}
+              isLoading={false}
+              onStatusChange={handleStatusChange}
+              onJumpToIssue={handleJumpToIssue}
+              showToast={showToast}
+            />
           )}
 
           {activeTab === "issues" && (

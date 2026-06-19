@@ -47,4 +47,17 @@ export const projectService = {
       JSON.stringify(projects)
     );
   },
+  saveWorkspace(id, workspace) {
+  const projects = this.getAll().map((project) =>
+    project.id === id
+      ? {
+          ...project,
+          ...workspace,
+          updatedAt: new Date().toISOString(),
+        }
+      : project
+  );
+
+  this.saveAll(projects);
+}
 };
