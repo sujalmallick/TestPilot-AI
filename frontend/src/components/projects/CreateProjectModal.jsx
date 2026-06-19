@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 export default function CreateProjectModal({
   open,
   onClose,
   onCreate,
+  initialData = null,
+  mode = "create",
 }) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+
+  const [name, setName] = useState(
+  initialData?.name || ""
+);
+
+const [description, setDescription] = useState(
+  initialData?.description || ""
+);
+
+useEffect(() => {
+  if (!open) return;
+
+  setName(initialData?.name || "");
+  setDescription(initialData?.description || "");
+}, [open, initialData]);
+
 
   if (!open) return null;
 
@@ -35,11 +51,15 @@ export default function CreateProjectModal({
         <div className="flex items-center justify-between border-b border-hairline px-6 py-4">
           <div>
             <h2 className="text-lg font-semibold text-ink">
-              Create Project
+            {mode === "edit"
+  ? "Rename Project"
+  : "Create Project"}
             </h2>
 
             <p className="mt-1 text-sm text-muted">
-              Start a new testing workspace.
+             {mode === "edit"
+  ? "Update your project details."
+  : "Start a new testing workspace."}
             </p>
           </div>
 
@@ -103,7 +123,9 @@ export default function CreateProjectModal({
               disabled={!name.trim()}
               className="rounded-lg bg-signal px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Create Project
+{mode === "edit"
+  ? "Save Changes"
+  : "Create Project"}
             </button>
           </div>
         </form>

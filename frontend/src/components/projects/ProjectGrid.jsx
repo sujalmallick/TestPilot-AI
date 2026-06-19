@@ -5,6 +5,7 @@ export default function ProjectGrid({
   projects = [],
   onOpenProject,
   onCreateProject,
+  onRenameProject,
 }) {
   if (projects.length === 0) {
     return (
@@ -17,11 +18,12 @@ export default function ProjectGrid({
   return (
     <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {projects.map((project) => (
-        <ProjectCard
-          key={project.id}
-          project={project}
-          onOpen={onOpenProject}
-        />
+       <ProjectCard
+  key={project.id}
+  project={project}
+  onOpen={onOpenProject}
+  onRename={onRenameProject}
+/>
       ))}
     </div>
   );

@@ -6,8 +6,7 @@ export function useProjects() {
   const [currentProject, setCurrentProject] = useState(null);
 
   useEffect(() => {
-    const stored = projectService.getAll();
-    setProjects(stored);
+    setProjects(projectService.getAll());
   }, []);
 
   const createProject = (project) => {
@@ -21,8 +20,10 @@ export function useProjects() {
   };
 
   const updateProject = (updatedProject) => {
-    const updated = projects.map((p) =>
-      p.id === updatedProject.id ? updatedProject : p
+    const updated = projects.map((project) =>
+      project.id === updatedProject.id
+        ? updatedProject
+        : project
     );
 
     setProjects(updated);
@@ -33,7 +34,9 @@ export function useProjects() {
   };
 
   const deleteProject = (id) => {
-    const updated = projects.filter((p) => p.id !== id);
+    const updated = projects.filter(
+      (project) => project.id !== id
+    );
 
     setProjects(updated);
 
@@ -44,8 +47,12 @@ export function useProjects() {
     }
   };
 
-  const selectProject = (project) => {
-    setCurrentProject(project);
+  const selectProject = (id) => {
+    const project = projects.find(
+      (p) => p.id === id
+    );
+
+    setCurrentProject(project || null);
   };
 
   return {

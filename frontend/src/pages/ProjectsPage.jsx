@@ -12,11 +12,12 @@ export default function ProjectsPage() {
   const {
     projects,
     createProject: addProject,
+    updateProject,
     selectProject,
   } = useProjects();
 
   const [showModal, setShowModal] = useState(false);
-
+const [editingProject, setEditingProject] = useState(null);
   const navigate = useNavigate();
 
   function handleCreate(data) {
@@ -26,6 +27,20 @@ export default function ProjectsPage() {
 
     setShowModal(false);
   }
+
+function handleRename(data) {
+  const updatedProject = {
+    ...editingProject,
+    name: data.name,
+    description: data.description,
+    updatedAt: new Date().toISOString(),
+  };
+
+  updateProject(updatedProject);
+
+  setEditingProject(null);
+}
+
 
  function handleOpen(id) {
   const project = projectService.getById(id);
@@ -57,17 +72,30 @@ export default function ProjectsPage() {
           </p>
         </div>
 
-        <ProjectGrid
-          projects={projects}
-          onOpenProject={handleOpen}
-          onCreateProject={() => setShowModal(true)}
-        />
-
-        <CreateProjectModal
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          onCreate={handleCreate}
-        />
+     <ProjectGrid
+  projects={projects}
+  onOpenProject={handleOpen}
+  onCreateProject={() => setShowModal(true)}
+  onRenameProject={setEditingProject}
+/>
+ <CreateProjectModal
+  open={showModal || !!editingProject}
+  onClose={() => {
+    setShowModal(false);
+    setEditingProject(null);
+  }}
+  onCreate={
+    editingProject
+      ? handleRename
+      : handleCreate
+  }
+  initialData={editingProject}
+  mode={
+    editingProject
+      ? "edit"
+      : "create"
+  }
+/>
 
       </div>
     </>
