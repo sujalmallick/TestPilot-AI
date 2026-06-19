@@ -38,7 +38,7 @@ const isWorkspaceRoute =
   const { toasts, showToast } = useToasts()
 const [project, setProject] = useState(null);
 const hasLoadedProject = useRef(false);
-const [projectNotFound, setProjectNotFound] = useState(false);
+
   // Workflow input + analysis
   const [workflow, setWorkflow] = useState('')
   const [observedSteps, setObservedSteps] = useState('')
@@ -81,11 +81,16 @@ useEffect(() => {
   const selectedProject = projectService.getById(projectId);
 
   if (!selectedProject) {
-    setProjectNotFound(true);
-    return;
-  }
+  navigate("/", {
+    replace: true,
+    state: {
+      deleted: true,
+    },
+  });
 
-  setProjectNotFound(false);
+  return;
+}
+
   setProject(selectedProject);
 
   // Restore workflow
@@ -335,30 +340,7 @@ function handleCopyIssueResult() {
     ...TABS.map((tab) => ({ label: `Go to ${tab.label}`, action: () => setActiveTab(tab.key) })),
     { label: 'Edit workflow', action: () => setPanelCollapsed(false) },
   ]
-if (projectNotFound) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50">
-      <div className="rounded-xl border border-hairline bg-white p-8 text-center shadow-sm">
 
-        <h1 className="mb-2 text-2xl font-semibold text-ink">
-          Project Not Found
-        </h1>
-
-        <p className="mb-6 text-muted">
-          This project doesn't exist or may have been deleted.
-        </p>
-
-        <button
-          onClick={() => (window.location.href = "/")}
-          className="rounded-lg bg-signal px-4 py-2 text-white"
-        >
-          ← Back to Projects
-        </button>
-
-      </div>
-    </div>
-  );
-}
   return (
   <div className="min-h-screen bg-slate-50 font-sans text-ink">
     <HeaderBar

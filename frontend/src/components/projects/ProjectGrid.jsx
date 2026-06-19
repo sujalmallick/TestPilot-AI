@@ -1,12 +1,16 @@
 import ProjectCard from "./ProjectCard";
 import EmptyProjects from "./EmptyProjects";
 
+
 export default function ProjectGrid({
   projects = [],
   onOpenProject,
   onCreateProject,
   onRenameProject,
+  onDeleteProject,
+  onShareProject,
 }) {
+
   if (projects.length === 0) {
     return (
       <EmptyProjects
@@ -18,11 +22,14 @@ export default function ProjectGrid({
   return (
     <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {projects.map((project) => (
-       <ProjectCard
+
+<ProjectCard
   key={project.id}
   project={project}
   onOpen={onOpenProject}
   onRename={onRenameProject}
+  onDelete={onDeleteProject}
+  onShare={onShareProject}
 />
       ))}
     </div>

@@ -14,7 +14,9 @@ import {
 export default function ProjectCard({
   project,
   onOpen,
-   onRename,
+  onRename,
+  onDelete,
+  onShare,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -112,15 +114,33 @@ useEffect(() => {
   Rename
 </button>
 
-      <button className="flex w-full items-center gap-3 px-4 py-2 text-sm hover:bg-paper">
-        <Share2 size={15} />
-        Share
-      </button>
+    <button
+  onClick={(e) => {
+    e.stopPropagation();
+    setMenuOpen(false);
+    onShare(project);
+  }}
+  className="flex w-full items-center gap-3 px-4 py-2 text-sm hover:bg-paper"
+>
+  <Share2 size={15} />
+  Share
+</button>
 
-      <button className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-        <Trash2 size={15} />
-        Delete
-      </button>
+      <button
+  onClick={(e) => {
+    e.stopPropagation();
+
+    setMenuOpen(false);
+
+    onDelete(project);
+  }}
+  className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+>
+  <Trash2 size={15} />
+  Delete
+</button>
+
+      
     </div>
   )}
 </div>
