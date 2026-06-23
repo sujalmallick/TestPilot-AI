@@ -46,10 +46,31 @@ Rules:
 
 
     response = call_llm(prompt)
+
     if isinstance(response, dict):
      return response
 
-    return parse_json_response(response)
+    modules = parse_json_response(response)
+
+    if not isinstance(modules, dict):
+     return {
+        "confirmed_modules": [],
+        "assumed_modules": [],
+        "unknown_areas": [],
+        "critical_workflows": [],
+        "high_risk_areas": [],
+    }
+
+    if modules.get("success") is False:
+     return {
+        "confirmed_modules": [],
+        "assumed_modules": [],
+        "unknown_areas": [],
+        "critical_workflows": [],
+        "high_risk_areas": [],
+    }
+
+    return modules
     
 
     

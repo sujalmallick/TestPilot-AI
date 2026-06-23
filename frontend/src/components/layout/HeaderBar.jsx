@@ -1,6 +1,7 @@
-import { Search, Circle } from "lucide-react";
+import { Search, Circle, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatRelativeTime } from "../../utils/time";
+import { useAuth } from "../../auth/AuthContext";
 import logo from "../../assets/bugmind2.png";
 import favicon from "../../assets/favicon.png";
 
@@ -11,6 +12,12 @@ export default function HeaderBar({
   updatedAt,
 }) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
 
   const shortcut =
     navigator.platform.toUpperCase().includes("MAC")
@@ -98,6 +105,16 @@ export default function HeaderBar({
           <kbd className="hidden rounded-md border border-hairline bg-paper px-2 py-0.5 font-mono text-[11px] text-muted md:inline">
             {shortcut}
           </kbd>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          title="Logout"
+          className="flex items-center gap-2 rounded-lg border border-hairline bg-surface px-2.5 py-2 text-[13px] font-semibold text-muted shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-flagged hover:bg-flagged-soft hover:text-flagged sm:px-3"
+        >
+          <LogOut size={15} />
+          <span className="hidden md:inline">Logout</span>
         </button>
 
       </div>

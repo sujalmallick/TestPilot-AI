@@ -1,4 +1,3 @@
-import json
 from utils import logger
 from utils import call_llm, parse_json_response
 
@@ -8,7 +7,7 @@ def analyze_issue_agent(
     observation,
     expected_result,
     actual_result,
-    failed_test_case
+    failed_test_case,
 ):
 
     prompt = f"""
@@ -66,4 +65,24 @@ Rules:
     if isinstance(response, dict):
         return response
 
-    return parse_json_response(response)
+    result = parse_json_response(response)
+
+    if not isinstance(result, dict):
+        logger.error("Invalid issue analysis returned by AI.")
+
+        return {
+            "reportType": "Observation",
+            "observationType": "Unknown",
+            "severity": "Medium",
+            "suggestedAction": "AI failed to analyze the issue.",
+        }
+
+    if result.get("success") is False:
+        return {
+            "reportType": "Observation",
+            "observationType": "Unknown",
+            "severity": "Medium",
+            "suggestedAction": "AI failed to analyze the issue.",
+        }
+
+    return result

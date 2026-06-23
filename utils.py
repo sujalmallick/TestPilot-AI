@@ -36,55 +36,80 @@ model = genai.GenerativeModel(
 
 
 def call_llm(prompt: str):
-    logger.info("Sending request to Gemini...")
+
+    logger.info("Sending request to Gemini")
 
     try:
+
         response = model.generate_content(prompt)
 
-        text = response.text
+        if not response.text:
+            return None
 
-        print("\n" + "=" * 100)
-        print("RAW GEMINI RESPONSE")
-        print("=" * 100)
-        print(text)
-        print("=" * 100 + "\n")
-
-        return text
+        return response.text
 
     except ResourceExhausted:
-        logger.exception("Gemini quota exceeded.")
 
-        return {
-            "success": False,
-            "error": "Gemini API quota exceeded.",
-        }
+        logger.error("Gemini quota exceeded.")
+
+        return None
 
     except InvalidArgument as e:
-        logger.exception("Invalid Gemini request.")
 
-        return {
-            "success": False,
-            "error": str(e),
-        }
+        logger.error(e)
+
+        return None
 
     except GoogleAPIError as e:
-        logger.exception("Google API Error.")
 
-        return {
-            "success": False,
-            "error": str(e),
-        }
+        logger.error(e)
+
+        return None
 
     except Exception as e:
-        logger.exception("Unexpected Gemini Error.")
+
+        logger.error(e)
+
+        return None
+import json
+import re
+
+def parse_json_response(response):
+
+    if response is None:
+        return {
+            "success": False,
+            "error": "No response returned from LLM."
+        }
+
+    if isinstance(response, dict):
+        return response
+
+    try:
+
+        cleaned = response.strip()
+
+        cleaned = cleaned.replace("```json", "")
+        cleaned = cleaned.replace("```", "")
+        cleaned = cleaned.strip()
+
+        # Extract first JSON array/object
+        match = re.search(r'(\{.*\}|\[.*\])', cleaned, re.DOTALL)
+
+        if match:
+            cleaned = match.group(1)
+
+        return json.loads(cleaned)
+
+    except Exception as e:
+
+        logger.error(f"JSON Parse Error: {e}")
 
         return {
             "success": False,
-            "error": str(e),
+            "error": "Invalid JSON returned by AI.",
+            "raw_response": response,
         }
-
-
-def parse_json_response(response):
 
     if response is None:
         return {

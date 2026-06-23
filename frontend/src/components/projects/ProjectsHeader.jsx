@@ -1,5 +1,6 @@
-import { Plus } from "lucide-react";
+import { Plus, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext";
 
 import logo from "../../assets/bugmind2.png";
 import favicon from "../../assets/favicon.png";
@@ -8,6 +9,12 @@ export default function ProjectsHeader({
   onCreateProject,
 }) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
 
   const currentDate = new Intl.DateTimeFormat(
     undefined,
@@ -63,6 +70,16 @@ export default function ProjectsHeader({
           >
             <Plus size={16} />
             New Project
+          </button>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            title="Logout"
+            className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-white px-3.5 py-2.5 text-sm font-semibold text-muted shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-flagged hover:bg-flagged-soft hover:text-flagged sm:px-4"
+          >
+            <LogOut size={16} />
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
 
