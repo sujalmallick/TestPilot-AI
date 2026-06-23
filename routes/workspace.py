@@ -41,6 +41,7 @@ def update_workspace_by_project(
         os_version=workspace.os_version,
         build=workspace.build,
         device=workspace.device,
+        checklist_progress=workspace.checklist_progress,
     )
 
 

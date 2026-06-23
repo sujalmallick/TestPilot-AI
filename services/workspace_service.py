@@ -38,6 +38,7 @@ def update_workspace(
     os_version: str,
     build: str,
     device: str,
+    checklist_progress: dict,
 ):
     project = (
         db.query(Project)
@@ -68,6 +69,7 @@ def update_workspace(
     workspace.os_version = os_version
     workspace.build = build
     workspace.device = device
+    workspace.checklist_progress = checklist_progress
 
     db.commit()
     db.refresh(workspace)

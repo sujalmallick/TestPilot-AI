@@ -1,8 +1,6 @@
 from datetime import datetime
-
-from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from database.base import Base
 
 
@@ -18,10 +16,10 @@ class Workspace(Base):
     )
 
     workflow: Mapped[str] = mapped_column(
-    Text,
-    default="",
-    nullable=False,
-)
+        Text,
+        default="",
+        nullable=False,
+    )
 
     observed_steps: Mapped[str] = mapped_column(
         Text,
@@ -53,6 +51,12 @@ class Workspace(Base):
         nullable=False,
     )
 
+    checklist_progress: Mapped[dict] = mapped_column(
+        JSON,
+        default=dict,
+        nullable=False,
+    )
+
     analysis_status: Mapped[str] = mapped_column(
         String(20),
         default="Draft",
@@ -76,13 +80,14 @@ class Workspace(Base):
     )
 
     analysis = relationship(
-    "Analysis",
-    back_populates="workspace",
-    uselist=False,
-    cascade="all, delete-orphan",
-)
+        "Analysis",
+        back_populates="workspace",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+
     test_cases = relationship(
-    "TestCase",
-    back_populates="workspace",
-    cascade="all, delete-orphan",
-)
+        "TestCase",
+        back_populates="workspace",
+        cascade="all, delete-orphan",
+    )

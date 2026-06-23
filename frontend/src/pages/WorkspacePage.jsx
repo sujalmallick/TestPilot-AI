@@ -105,13 +105,7 @@ const [project, setProject] = useState(null);
   const [panelCollapsed, setPanelCollapsed] = useState(false)
   const [activeTab, setActiveTab] = useState('modules')
   const [showSummary, setShowSummary] = useState(false)
-const [checkedItems, setCheckedItems] = useState(() => {
-  const saved = localStorage.getItem(
-    `checklist-${projectId}`
-  );
-
-  return saved ? JSON.parse(saved) : {};
-});
+const [checkedItems, setCheckedItems] = useState({});
   // Issue analysis
   const [issueForm, setIssueForm] = useState(EMPTY_ISSUE_FORM)
   const [issueStatus, setIssueStatus] = useState('idle')
@@ -123,12 +117,7 @@ const [checkedItems, setCheckedItems] = useState(() => {
   
   const isAnalyzing = analysisStatus === 'loading'
  const showWorkspace = analysisStatus === 'success'
-useEffect(() => {
-  localStorage.setItem(
-    `checklist-${projectId}`,
-    JSON.stringify(checkedItems)
-  );
-}, [checkedItems, projectId]);
+
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -155,7 +144,12 @@ useEffect(() => {
       osVersion: workspace.os_version || "",
       build: workspace.build || "",
       device: workspace.device || "",
+      
+      
     });
+    setCheckedItems(
+  workspace.checklist_progress || {}
+);
 
     try {
 
@@ -232,6 +226,7 @@ useEffect(() => {
         os_version: testEnvironment.osVersion,
         build: testEnvironment.build,
         device: testEnvironment.device,
+         checklist_progress: checkedItems,
       });
     } catch (err) {
       console.error("Workspace save failed:", err);
@@ -244,6 +239,7 @@ useEffect(() => {
   workflow,
   observedSteps,
   testEnvironment,
+  checkedItems,
 ]);
 
 useEffect(() => {
@@ -300,9 +296,6 @@ const updatedProject =
   await getProject(projectId);
 
 setProject(updatedProject);
-localStorage.removeItem(
-  `checklist-${projectId}`
-);
 
 setCheckedItems({});
 setAnalysisStatus("success")

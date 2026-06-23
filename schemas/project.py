@@ -22,6 +22,7 @@ class WorkspaceResponse(BaseModel):
     os_version: str | None = None
     build: str | None = None
     device: str | None = None
+    checklist_progress: dict = {}
 
     class Config:
         from_attributes = True
@@ -39,3 +40,5 @@ class WorkspaceUpdate(BaseModel):
     build: str = ""
 
     device: str = ""
+
+    checklist_progress: dict = {}
