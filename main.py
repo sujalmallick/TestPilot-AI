@@ -10,9 +10,15 @@ from routes.test_case import router as test_case_router
 from routes.issue import router as issue_router
 from routes.auth import router as auth_router
 
+from routes.ai_settings import (
+    router as ai_settings_router
+)
 
 app = FastAPI()
 
+app.include_router(
+    ai_settings_router
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
