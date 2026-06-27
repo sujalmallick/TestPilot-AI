@@ -9,7 +9,8 @@ def generate_test_cases_agent(
     modules,
     critical_workflows,
     high_risk_areas,
-    observed_steps
+    observed_steps,
+    user_id=None
 ):
     confirmed_mods = modules.get("confirmed_modules", []) if isinstance(modules, dict) else []
 
@@ -93,13 +94,13 @@ Rules:
 """
 
     logger.info("Running Test Case Agent")
-    response = call_llm(prompt)
+    response = call_llm(prompt,user_id=user_id)
 
     if response is None:
-     return {
-        "success": False,
-        "error": "Gemini API quota exceeded or no response returned."
-    }
+        return {
+            "success": False,
+            "error": "AI Provider error (e.g. invalid API key, quota exceeded, or no response)."
+        }
     # Validate and normalize test cases
     if isinstance(response, dict):
      test_cases = response

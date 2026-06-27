@@ -9,9 +9,14 @@ from agents.test_case_agent import generate_test_cases_agent
 
 # Module Agent Node
 def module_node(state: WorkflowState):
+    print(
+    "CURRENT USER:",
+    state.get("user_id")
+)
 
     module_data = identify_modules_agent(
-        state["workflow"]
+        state["workflow"],
+        state.get("user_id")
     )
 
     # Stop immediately if AI failed
@@ -56,7 +61,8 @@ def checklist_node(state: WorkflowState):
         workflow=state["workflow"],
         modules=state["modules"],
         critical_workflows=state["critical_workflows"],
-        high_risk_areas=state["high_risk_areas"]
+        high_risk_areas=state["high_risk_areas"],
+        user_id=state.get("user_id")
     )
 
     return {
@@ -90,7 +96,9 @@ def test_case_node(state: WorkflowState):
         modules=state["modules"],
         critical_workflows=state["critical_workflows"],
         high_risk_areas=state["high_risk_areas"],
-        observed_steps=state.get("observed_steps")
+        observed_steps=state.get("observed_steps"),
+        user_id=state.get("user_id")
+
     )
 
     return {

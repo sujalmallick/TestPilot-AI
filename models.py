@@ -16,6 +16,7 @@ class WorkflowInput(BaseModel):
 class WorkflowState(TypedDict):
 
     # User Input
+    user_id: int | None
     workflow: str
     observed_steps: list[str] | None
     existing_checklist: list[dict] | None

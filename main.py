@@ -9,7 +9,9 @@ from routes.analysis import router as analysis_router
 from routes.test_case import router as test_case_router
 from routes.issue import router as issue_router
 from routes.auth import router as auth_router
-
+from auth.dependencies import get_current_user
+from database.models.user import User
+from fastapi import Depends
 from routes.ai_settings import (
     router as ai_settings_router
 )
@@ -37,10 +39,11 @@ app.include_router(auth_router)
 
 
 @app.post("/analyze-workflow")
-def analyze_workflow(data: WorkflowInput):
+def analyze_workflow(data: WorkflowInput,  current_user: User = Depends(get_current_user),):
 
     result = workflow_graph.invoke(
         {
+            "user_id": current_user.id,
             "workflow": data.workflow,
             "observed_steps": data.observed_steps,
             "existing_checklist": data.existing_checklist,

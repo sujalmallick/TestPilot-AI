@@ -3,7 +3,7 @@ from utils import logger
 from utils import call_llm, parse_json_response
 
 
-def identify_modules_agent(workflow: str):
+def identify_modules_agent(workflow: str, user_id=None):
     prompt = f"""
 You are a Principal AI Engineer and Senior QA Architect analyzing an application's workflow description.
 
@@ -44,14 +44,15 @@ Rules:
 """
 
     logger.info("Running Module Agent")
+    print("MODULE USER:", user_id)
 
-    response = call_llm(prompt)
-
+    response = call_llm(prompt, user_id=user_id)
+    
     # Quota exhausted / API failure
     if response is None:
         return {
             "success": False,
-            "error": "Gemini API quota exceeded or no response returned."
+            "error": "AI Provider error (e.g. invalid API key, quota exceeded, or no response)."
         }
 
     # Already a dict
@@ -59,6 +60,7 @@ Rules:
         modules = response
     else:
         modules = parse_json_response(response, prompt)
+
 
     # Validation safety
     if not isinstance(modules, dict):
@@ -85,5 +87,7 @@ Rules:
             ]
         else:
             normalized_modules[key] = []
+
+            
 
     return normalized_modules

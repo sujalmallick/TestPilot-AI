@@ -6,7 +6,8 @@ def generate_checklist_agent(
     workflow: str,
     modules: dict,
     critical_workflows: list,
-    high_risk_areas: list
+    high_risk_areas: list,
+    user_id=None
 ):
     confirmed = modules.get("confirmed_modules", []) if isinstance(modules, dict) else []
 
@@ -64,13 +65,13 @@ Rules:
 """
 
     logger.info("Running Checklist Agent")
-    response = call_llm(prompt)
+    response = call_llm(prompt,user_id=user_id)
 
     if response is None:
-      return {
-        "success": False,
-        "error": "Gemini API quota exceeded or no response returned."
-    }
+        return {
+            "success": False,
+            "error": "AI Provider error (e.g. invalid API key, quota exceeded, or no response)."
+        }
 
     # Validate and normalize checklist structure
     if isinstance(response, dict):
