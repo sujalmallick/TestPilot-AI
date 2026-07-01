@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Trash2, X } from "lucide-react";
-
+import ConfirmDialog from "../shared/ConfirmDialog";
 export default function DeleteProjectModal({
   open,
   project,
   onClose,
   onDelete,
 }) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  if (!open || !project) return null;
   if (!open || !project) return null;
 
   return (
@@ -56,7 +60,8 @@ export default function DeleteProjectModal({
           </button>
 
           <button
-            onClick={() => onDelete(project.id)}
+            onClick={() => setConfirmOpen(true)}
+            disabled={deleting}
             className="btn-primary !bg-red-600 hover:!bg-red-700 !border-red-600 !shadow-none"
           >
             <Trash2 size={15} />
@@ -65,6 +70,24 @@ export default function DeleteProjectModal({
         </div>
 
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete project?"
+        message={`Are you sure you want to permanently delete "${project.name}"? This cannot be undone.`}
+        confirmText="Delete"
+        loading={deleting}
+        onConfirm={async () => {
+          setDeleting(true);
+          try {
+            await onDelete(project.id);
+            onClose();
+          } finally {
+            setDeleting(false);
+            setConfirmOpen(false);
+          }
+        }}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }

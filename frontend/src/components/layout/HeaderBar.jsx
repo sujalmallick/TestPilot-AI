@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Search, Home, LogOut, User, Users, Bell, Briefcase, KeyRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatRelativeTime } from "../../utils/time";
@@ -9,7 +9,8 @@ import AISettingsModal from "../common/AISettingsModal";
 import useToasts from "../shared/useToasts";
 import ToastStack from "../shared/ToastStack";
 import NotificationsDrawer from "../layout/NotificationsDrawer";
-import { fetchNotifications } from "../../services/notificationService";
+import { getUnreadCount } from "../../services/notificationService";
+import { useSSENotifications } from "../../hooks/useSSENotifications";
 
 export default function HeaderBar({
   connected = true,
@@ -36,13 +37,21 @@ export default function HeaderBar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Load initial unread count once user is known
   useEffect(() => {
-    if (user && (profileOpen || !profileOpen)) {
-      fetchNotifications()
-        .then(data => setUnreadCount(data.filter(n => !n.is_read).length))
-        .catch(() => {});
-    }
-  }, [user, profileOpen]);
+    if (!user) return;
+    getUnreadCount().then(setUnreadCount).catch(() => {});
+  }, [user]);
+
+  // SSE: update badge instantly on new notifications
+  useSSENotifications({
+    enabled: !!user,
+    onSignal: useCallback((signal) => {
+      if (signal.event === "new_notification" && typeof signal.unread_count === "number") {
+        setUnreadCount(signal.unread_count);
+      }
+    }, []),
+  });
 
   function handleLogout() {
     logout();

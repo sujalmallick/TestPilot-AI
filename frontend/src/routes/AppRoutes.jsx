@@ -16,6 +16,10 @@ import ProfilePage from "../pages/settings/ProfilePage";
 import OrganizationsPage from "../pages/OrganizationsPage";
 import InviteAcceptPage from "../pages/InviteAcceptPage";
 import MyWorkPage from "../pages/MyWorkPage";
+import ActivityFeedPage from "../pages/ActivityFeedPage";
+import DashboardPage from "../pages/DashboardPage";
+import ProjectDashboardPage from "../pages/ProjectDashboardPage";
+import TeamDashboardPage from "../pages/TeamDashboardPage";
 
 export default function AppRoutes() {
   const { authenticated } =
@@ -76,6 +80,17 @@ export default function AppRoutes() {
       />
 
       <Route
+        path="/project/:projectId/activity"
+        element={
+          <ProtectedRoute>
+
+            <ActivityFeedPage />
+
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/settings/profile"
         element={
           <ProtectedRoute>
@@ -113,6 +128,33 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <MyWorkPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/project/:projectId/dashboard"
+        element={
+          <ProtectedRoute>
+            <ProjectDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/organizations/:orgId/teams/:teamId/dashboard"
+        element={
+          <ProtectedRoute>
+            <TeamDashboardPage />
           </ProtectedRoute>
         }
       />

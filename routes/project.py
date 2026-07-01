@@ -72,7 +72,7 @@ def update_existing_project(
         name=project.name,
         description=project.description,
         status=project.status,
-        owner_id=current_user.id,
+        user_id=current_user.id,
     )
 
 
@@ -85,7 +85,7 @@ def delete_existing_project(
     return delete_project(
         db=db,
         project_id=project_id,
-        owner_id=current_user.id,
+        user_id=current_user.id,
     )
 
 
@@ -176,4 +176,4 @@ def remove_project_team_route(
     db: Session = Depends(get_db),
 ):
     remove_team_from_project(db, project_id, team_id, current_user.id)
-    return {"message": "Team removed."}
+    return {"message": "Team removed."}

@@ -13,12 +13,14 @@ import {
   Building2,
   Shield,
   Eye,
-  Crown
+  Crown,
+  LayoutDashboard
 } from "lucide-react";
 
 export default function ProjectCard({
   project,
   onOpen,
+  onDashboard,
   onRename,
   onDelete,
   onShare,
@@ -134,6 +136,18 @@ return (
               onClick={(e) => e.stopPropagation()}
               className="absolute right-0 bottom-full mb-2 z-20 w-40 rounded-xl border border-hairline bg-white py-2 shadow-xl menu-enter"
             >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDashboard?.(project);
+                  setMenuOpen(false);
+                }}
+                className="flex w-full items-center gap-3 px-4 py-2 text-sm hover:bg-paper"
+              >
+                <LayoutDashboard size={15} />
+                Dashboard
+              </button>
+
               {canEdit && (
                 <button
                   onClick={(e) => {

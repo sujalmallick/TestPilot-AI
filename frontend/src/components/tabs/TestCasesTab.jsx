@@ -1,5 +1,5 @@
-import { Download, Table2, Plus } from "lucide-react";
-import { useState } from "react";
+import { Download, Table2, Plus, Filter, X } from "lucide-react";
+import { useState, useMemo } from "react";
 import EmptyState from '../shared/EmptyState'
 import TestCaseTable from '../shared/TestCaseTable'
 import CreateTestCaseModal from '../workspace/CreateTestCaseModal'
@@ -9,6 +9,7 @@ import { exportTestCasesCSV } from "../../lib/exportCSV";
 export default function TestCasesTab({
   testCases,
   projectId,
+  project,
   isLoading,
   onStatusChange,
   onAssigneeChange,
@@ -17,8 +18,18 @@ export default function TestCasesTab({
   onManualCreate,
 }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const total = testCases?.length || 0;
+  const [filterModule, setFilterModule] = useState(null);
+  const [filterCategory, setFilterCategory] = useState(null);
 
+  const filteredTestCases = useMemo(() => {
+    let result = testCases || [];
+    if (filterModule) result = result.filter(tc => tc.module === filterModule);
+    if (filterCategory) result = result.filter(tc => tc.category === filterCategory);
+    return result;
+  }, [testCases, filterModule, filterCategory]);
+
+  const total = testCases?.length || 0;
+  const filteredTotal = filteredTestCases.length;
 
   if (!testCases || testCases.length === 0) {
     return (
@@ -58,7 +69,24 @@ export default function TestCasesTab({
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {(filterModule || filterCategory) && (
+            <div className="flex items-center gap-2 mr-2">
+              <span className="text-xs text-muted flex items-center gap-1"><Filter size={12}/> Active Filters:</span>
+              {filterModule && (
+                <span className="flex items-center gap-1 bg-signal/10 text-signal text-[11px] px-2 py-0.5 rounded-full">
+                  {filterModule}
+                  <button onClick={() => setFilterModule(null)} className="hover:text-ink"><X size={10}/></button>
+                </span>
+              )}
+              {filterCategory && (
+                <span className="flex items-center gap-1 bg-purple-500/10 text-purple-600 text-[11px] px-2 py-0.5 rounded-full">
+                  {filterCategory}
+                  <button onClick={() => setFilterCategory(null)} className="hover:text-ink"><X size={10}/></button>
+                </span>
+              )}
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
@@ -70,7 +98,7 @@ export default function TestCasesTab({
           <button
             type="button"
             onClick={() => {
-              exportTestCasesCSV(testCases, "BugMind_TestCases");
+              exportTestCasesCSV(filteredTestCases, "BugMind_TestCases");
             }}
             className="btn-secondary"
           >
@@ -89,11 +117,14 @@ export default function TestCasesTab({
       )}
 
       <TestCaseTable
-        testCases={testCases}
+        testCases={filteredTestCases}
         projectId={projectId}
+        project={project}
         onStatusChange={onStatusChange}
         onAssigneeChange={onAssigneeChange}
         onJumpToIssue={onJumpToIssue}
+        onFilterModule={setFilterModule}
+        onFilterCategory={setFilterCategory}
       />
     </div>
   )

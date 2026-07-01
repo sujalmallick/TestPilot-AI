@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Plus, LogOut, User, Users, Bell, Briefcase } from "lucide-react";
+import { Plus, LogOut, User, Users, Bell, Briefcase, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -104,7 +104,7 @@ export default function ProjectsHeader({
               {/* Avatar wrapper — separate from overflow-hidden so badge shows */}
               <div className="relative cursor-pointer" onClick={() => setProfileOpen(!profileOpen)}>
                 <div 
-                  className="flex h-9 w-9 items-center justify-center rounded-full overflow-hidden bg-gradient-to-br from-signal to-indigo-600 text-[13px] font-bold text-white shadow-sm ring-2 ring-transparent transition hover:ring-signal/30"
+                  className="flex h-9 w-9 items-center justify-center rounded-full overflow-hidden bg-linear-to-br from-signal to-indigo-600 text-[13px] font-bold text-white shadow-sm ring-2 ring-transparent transition hover:ring-signal/30"
                 >
                   {user.avatar_url ? (
                     <img
@@ -118,7 +118,7 @@ export default function ProjectsHeader({
                 </div>
                 {/* Unread badge */}
                 {unreadCount > 0 && (
-                  <div className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white shadow-sm ring-2 ring-white z-10">
+                  <div className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white shadow-sm ring-2 ring-white z-10">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </div>
                 )}
@@ -160,6 +160,15 @@ export default function ProjectsHeader({
                   >
                     <Briefcase size={15} className="text-muted" />
                     My Work
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => navigate("/dashboard")}
+                    className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-ink transition hover:bg-paper"
+                  >
+                    <LayoutDashboard size={15} className="text-muted" />
+                    Dashboard
                   </button>
 
                   <button

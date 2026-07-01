@@ -101,11 +101,11 @@ def get_project_by_id(
     project_id: int,
     user_id: int,
 ):
-    require_project_role(db, user_id, project_id, "viewer")
-    
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    require_project_role(db, user_id, project_id, "viewer")
         
     return project
 
@@ -117,11 +117,11 @@ def update_project(
     description: str,
     status: str,
 ):
-    require_project_role(db, user_id, project_id, "editor")
-    
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    require_project_role(db, user_id, project_id, "editor")
 
     project.name = name
     project.description = description
@@ -138,11 +138,11 @@ def delete_project(
     project_id: int,
     user_id: int,
 ):
-    require_project_role(db, user_id, project_id, "owner")
-    
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    require_project_role(db, user_id, project_id, "owner")
 
     db.delete(project)
     db.commit()
@@ -155,11 +155,11 @@ def touch_project(
     project_id: int,
     user_id: int,
 ):
-    require_project_role(db, user_id, project_id, "editor")
-    
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    require_project_role(db, user_id, project_id, "viewer")
 
     project.updated_at = datetime.utcnow()
 

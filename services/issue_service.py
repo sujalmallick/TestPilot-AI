@@ -88,6 +88,18 @@ def save_issue(
     db.commit()
     db.refresh(new_issue)
 
+    # Log activity
+    from services.activity_service import log_activity, Verb
+    log_activity(
+        db=db,
+        verb=Verb.CREATED_ISSUE,
+        entity_type="issue",
+        entity_id=new_issue.id,
+        entity_label=new_issue.title,
+        actor_id=owner_id,
+        project_id=project_id,
+    )
+
     return new_issue
 
 

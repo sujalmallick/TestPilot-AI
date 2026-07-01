@@ -8,6 +8,7 @@ from database.models.project import Project
 from database.models.workspace import Workspace
 from database.models.test_case import TestCase
 from auth.permissions import require_project_role
+from services.activity_service import log_activity, Verb
 
 def _get_workspace(db: Session, project_id: int):
     ws = db.query(Workspace).filter(Workspace.project_id == project_id).first()
@@ -91,6 +92,17 @@ def create_manual_test_case(db: Session, project_id: int, current_user_id: int, 
     db.add(tc)
     db.commit()
     db.refresh(tc)
+    log_activity(
+        db=db,
+        verb=Verb.CREATED_TEST_CASE,
+        entity_type="test_case",
+        entity_id=tc.id,
+        entity_label=tc.description or tc.test_case_id,
+        actor_id=current_user_id,
+        project_id=project_id,
+        org_id=None,
+        meta=None,
+    )
     return tc
 
 

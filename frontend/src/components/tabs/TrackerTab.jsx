@@ -36,9 +36,20 @@ export default function TrackerTab({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [moduleFilter, setModuleFilter] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [bulkAction, setBulkAction] = useState("");
   const hasTestCases = testCases.length > 0;
+
+  // Derive unique module + category values for filter chips
+  const modules = useMemo(() => [
+    ...new Set(testCases.map(tc => tc.module).filter(Boolean))
+  ], [testCases]);
+
+  const categories = useMemo(() => [
+    ...new Set(testCases.map(tc => tc.category).filter(Boolean))
+  ], [testCases]);
 
   const counts = useMemo(() => {
     const result = {
@@ -137,8 +148,18 @@ export default function TrackerTab({
       });
     }
 
+    // Module filter
+    if (moduleFilter) {
+      filtered = filtered.filter((tc) => tc.module === moduleFilter);
+    }
+
+    // Category filter
+    if (categoryFilter) {
+      filtered = filtered.filter((tc) => tc.category === categoryFilter);
+    }
+
     return filtered;
-  }, [search, statusFilter, priorityFilter, testCases]);
+  }, [search, statusFilter, priorityFilter, moduleFilter, categoryFilter, testCases]);
 
   const toggleRow = (id) => {
     setSelectedRows((prev) =>
@@ -166,6 +187,14 @@ export default function TrackerTab({
     setSelectedRows([]);
     setBulkAction("");
   };
+
+  function clearAllFilters() {
+    setSearch("");
+    setStatusFilter("all");
+    setPriorityFilter("all");
+    setModuleFilter(null);
+    setCategoryFilter(null);
+  }
 
   const statusChips = [
     ["all", "All"],
@@ -322,19 +351,56 @@ export default function TrackerTab({
                   {label}
                 </button>
               ))}
-
-              {(statusFilter !== "all" || priorityFilter !== "all") && (
-                <button
-                  onClick={() => {
-                    setStatusFilter("all");
-                    setPriorityFilter("all");
-                  }}
-                  className="ml-1 text-xs font-semibold text-signal hover:underline"
-                >
-                  Clear Filters
-                </button>
-              )}
             </div>
+
+            {/* Module filter chips */}
+            {modules.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-muted">Module</span>
+                {modules.map((mod) => (
+                  <button
+                    key={mod}
+                    onClick={() => setModuleFilter(moduleFilter === mod ? null : mod)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      moduleFilter === mod
+                        ? "border-signal bg-signal text-white"
+                        : "border-hairline bg-white text-muted hover:border-signal hover:text-ink"
+                    }`}
+                  >
+                    {mod}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Category filter chips */}
+            {categories.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-muted">Category</span>
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      categoryFilter === cat
+                        ? "border-purple-600 bg-purple-600 text-white"
+                        : "border-hairline bg-white text-muted hover:border-purple-400 hover:text-ink"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {(statusFilter !== "all" || priorityFilter !== "all" || moduleFilter || categoryFilter) && (
+              <button
+                onClick={clearAllFilters}
+                className="mt-3 text-xs font-semibold text-signal hover:underline"
+              >
+                Clear All Filters
+              </button>
+            )}
           </div>
 
         </>
@@ -395,11 +461,7 @@ export default function TrackerTab({
               </p>
 
               <button
-                onClick={() => {
-                  setSearch("");
-                  setStatusFilter("all");
-                  setPriorityFilter("all");
-                }}
+                onClick={clearAllFilters}
                 className="btn-primary mt-5"
               >
                 Clear Filters
@@ -415,6 +477,8 @@ export default function TrackerTab({
               selectedRows={selectedRows}
               onToggleRow={toggleRow}
               onToggleAll={toggleAll}
+              onFilterModule={(mod) => setModuleFilter(moduleFilter === mod ? null : mod)}
+              onFilterCategory={(cat) => setCategoryFilter(categoryFilter === cat ? null : cat)}
             />
           )}
         </div>

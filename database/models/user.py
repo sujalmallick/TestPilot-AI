@@ -12,6 +12,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     name: Mapped[str] = mapped_column(String(100))
+    username: Mapped[str] = mapped_column(String(50), unique=True, index=True, nullable=True)
 
     bio: Mapped[str | None] = mapped_column(String(500), nullable=True)
     job_title: Mapped[str | None] = mapped_column(String(100), nullable=True)

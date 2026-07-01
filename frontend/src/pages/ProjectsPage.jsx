@@ -98,6 +98,9 @@ export default function ProjectsPage() {
 function handleShare(project) {
   setSharingProject(project);
 }
+function handleOpenDashboard(project) {
+  navigate(`/project/${project.id}/dashboard`);
+}
 async function handleOpen(id) {
   console.log("Clicked id:", id);
 
@@ -427,6 +430,7 @@ const filterChips = [
             <ProjectGrid
               projects={sortedProjects}
           onOpenProject={handleOpen}
+          onDashboardProject={handleOpenDashboard}
           onCreateProject={() => setShowModal(true)}
           onRenameProject={setEditingProject}
           onDeleteProject={setDeletingProject}

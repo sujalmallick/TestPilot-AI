@@ -5,6 +5,7 @@ import EmptyProjects from "./EmptyProjects";
 export default function ProjectGrid({
   projects = [],
   onOpenProject,
+  onDashboardProject,
   onCreateProject,
   onRenameProject,
   onDeleteProject,
@@ -27,6 +28,7 @@ export default function ProjectGrid({
   key={project.id}
   project={project}
   onOpen={onOpenProject}
+  onDashboard={onDashboardProject}
   onRename={onRenameProject}
   onDelete={onDeleteProject}
   onShare={onShareProject}

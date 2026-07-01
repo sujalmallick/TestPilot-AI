@@ -1,15 +1,21 @@
 import { ArrowRight } from 'lucide-react'
 import StatusPill, { PriorityPill } from './StatusPill'
 import AssigneeSelector from '../common/AssigneeSelector'
+import { MessageSquare } from 'lucide-react'
+import { useState } from 'react'
+import ItemDetailsPanel from '../comments/ItemDetailsPanel'
 
 export default function TestCaseTable({
   testCases,
   projectId,
+  project,
   onStatusChange,
   onAssigneeChange,
   onJumpToIssue,
- 
+  onFilterModule,
+  onFilterCategory,
 }) {
+  const [activeItem, setActiveItem] = useState(null);
   const safeTestCases = Array.isArray(testCases) ? testCases : []
 
   return (
@@ -24,7 +30,8 @@ export default function TestCaseTable({
             <th className="px-3 py-2.5 font-medium">Category</th>
             <th className="px-3 py-2.5 font-medium">Priority</th>
             <th className="px-3 py-2.5 font-medium">Status</th>
-            <th className="px-3 py-2.5 font-medium">Assignee</th>
+            {project?.organization_id && <th className="px-3 py-2.5 font-medium">Assignee</th>}
+            <th className="px-3 py-2.5 font-medium">Comments</th>
             <th className="px-3 py-2.5 text-center font-medium">
               Issue
             </th>
@@ -47,11 +54,29 @@ export default function TestCaseTable({
               </td>
 
               <td className="px-3 py-3 text-muted">
-                {testCase.module || "-"}
+                {testCase.module ? (
+                  <button 
+                    onClick={() => onFilterModule?.(testCase.module)}
+                    className="hover:text-signal hover:underline transition-colors"
+                  >
+                    {testCase.module}
+                  </button>
+                ) : (
+                  "-"
+                )}
               </td>
 
               <td className="px-3 py-3 text-muted">
-                {testCase.category || "-"}
+                {testCase.category ? (
+                  <button 
+                    onClick={() => onFilterCategory?.(testCase.category)}
+                    className="hover:text-purple-600 hover:underline transition-colors"
+                  >
+                    {testCase.category}
+                  </button>
+                ) : (
+                  "-"
+                )}
               </td>
 
               <td className="px-3 py-3">
@@ -69,14 +94,26 @@ export default function TestCaseTable({
                 />
               </td>
 
+              {project?.organization_id && (
+                <td className="px-3 py-3">
+                  <AssigneeSelector
+                    type="test_case"
+                    itemId={testCase.id}
+                    projectId={projectId}
+                    currentAssigneeId={testCase.assignee_id}
+                    onAssigneeChange={(userId) => onAssigneeChange?.(testCase.id, userId)}
+                  />
+                </td>
+              )}
+
               <td className="px-3 py-3">
-                <AssigneeSelector
-                  type="test_case"
-                  itemId={testCase.id}
-                  projectId={projectId}
-                  currentAssigneeId={testCase.assignee_id}
-                  onAssigneeChange={(userId) => onAssigneeChange?.(testCase.id, userId)}
-                />
+                <button
+                  type="button"
+                  onClick={() => setActiveItem(testCase)}
+                  className="p-1.5 text-muted hover:text-signal hover:bg-signal/10 rounded transition-colors"
+                >
+                  <MessageSquare size={16} />
+                </button>
               </td>
 
               <td className="px-3 py-3 text-center">
@@ -101,6 +138,15 @@ export default function TestCaseTable({
           ))}
         </tbody>
       </table>
+
+      {/* Slide-over panel for comments & details */}
+      <ItemDetailsPanel
+        isOpen={!!activeItem}
+        onClose={() => setActiveItem(null)}
+        item={activeItem}
+        type="test_case"
+        projectId={projectId}
+      />
     </div>
   )
 }

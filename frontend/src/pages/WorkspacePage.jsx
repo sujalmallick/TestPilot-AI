@@ -19,6 +19,8 @@ import IssueAnalysisTab from "../components/tabs/IssueAnalysisTab";
 import TrackerTab from "../components/tabs/TrackerTab";
 import { analyzeWorkflow, classifyIssue, saveAnalysis, getAnalysis } from "../services/analysisApi";
 import { useRef } from "react";
+import ActivityFeed from "../components/shared/ActivityFeed";
+import { getProjectActivity } from "../services/activityApi";
 
 import {
   getProject,
@@ -41,6 +43,7 @@ const TABS = [
   { key: 'testcases', label: 'Test Cases' },
   { key: 'issues', label: 'Issue Analysis' },
   { key: 'tracker', label: 'Tracker' },
+  { key: 'activity', label: 'Activity' },
 ]
 
 const EMPTY_ISSUE_FORM = { observation: '', expected: '', actual: '', mode: 'failed' }
@@ -188,6 +191,7 @@ useEffect(() => {
 setTestCases(
   cases.map(tc => ({
     id: tc.test_case_id,
+    db_id: tc.id,           // numeric PK for comments
     description: tc.description,
     module: tc.module,
     category: tc.category,
@@ -606,6 +610,7 @@ testEnvironment={testEnvironment}        onTestEnvironmentChange={setTestEnviron
               <TestCasesTab
                 testCases={testCases}
                 projectId={projectId}
+                project={project}
                 isLoading={isAnalyzing}
                 onStatusChange={handleStatusChange}
                 onAssigneeChange={(tcId, assigneeId) => {
@@ -633,6 +638,7 @@ testEnvironment={testEnvironment}        onTestEnvironmentChange={setTestEnviron
             <TrackerTab
               testCases={testCases}
               projectId={projectId}
+              project={project}
               onStatusChange={handleStatusChange}
               onAssigneeChange={(tcId, assigneeId) => {
                 setTestCases(prev => prev.map(tc => tc.id === tcId ? { ...tc, assignee_id: assigneeId } : tc))
@@ -640,6 +646,12 @@ testEnvironment={testEnvironment}        onTestEnvironmentChange={setTestEnviron
               onJumpToIssue={handleJumpToIssue}
               showToast={showToast}
             />
+          )}
+
+          {activeTab === "activity" && (
+            <div className="mx-auto max-w-4xl px-4 py-2">
+              <ActivityFeed fetchFn={(page, limit) => getProjectActivity(projectId, page, limit)} />
+            </div>
           )}
 
         </main>
